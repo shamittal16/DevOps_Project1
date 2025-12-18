@@ -34,7 +34,10 @@ jobs:
         run: terraform -chdir=terraform init
 
       - name: Terraform Plan
-        run: terraform -chdir=terraform plan -input=false
+        run: |
+          terraform -chdir=terraform plan -input=false | tee plan.out
+          echo "----------------------------------------"
+          grep -E "Plan:" plan.out
 
       - name: Terraform Apply
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
