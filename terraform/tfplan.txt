@@ -46,10 +46,10 @@ Terraform will perform the following actions:
       + spot_instance_request_id             = (known after apply)
       + subnet_id                            = (known after apply)
       + tags                                 = {
-          + "Name" = "aws-ec2"
+          + "Name" = "new-ec2"
         }
       + tags_all                             = {
-          + "Name" = "aws-ec2"
+          + "Name" = "new-ec2"
         }
       + tenancy                              = (known after apply)
       + user_data_base64                     = (known after apply)

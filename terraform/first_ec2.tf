@@ -9,6 +9,6 @@ resource "aws_instance" "first-aws-ec2" {
   instance_type = "t3.micro"
 
   tags = {
-    Name ="aws-ec2"
+    Name ="new-ec2"
   }
 }
