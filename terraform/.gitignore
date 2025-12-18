@@ -1,10 +1,9 @@
 # Terraform
 .terraform/
 terraform/.terraform/
-
 .terraform.lock.hcl
 crash.log
-
+terraform/tf*
 # Terraform plan files
 *.tfplan
 
