@@ -1,7 +1,5 @@
 provider "aws" {
-  region     = "ap-southeast-2"
-  access_key = "AKIAZ46F6WUDJ7OTOUVG"
-  secret_key = "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"
+  region     = var.aws_region
 }
 
 resource "aws_instance" "first-aws-ec2" {
