@@ -25,5 +25,8 @@ jobs:
         with:
           terraform_version: latest
 
+      - name: Terraform Init
+        run: terraform -chdir=terraform init
+        
       - name: Terraform Destroy
         run: terraform -chdir=terraform destroy
