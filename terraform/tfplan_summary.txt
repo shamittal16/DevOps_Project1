@@ -1,0 +1,5 @@
+Terraform Plan Summary: Create=1, Update=0, Delete=0
+--------------------------------------------
+registry.terraform.io
+├─ hashicorp
+│  └─ aws aws_instance
