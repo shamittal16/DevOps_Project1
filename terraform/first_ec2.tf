@@ -1,12 +1,12 @@
 provider "aws" {
-  region     = var.aws_region
+  region     = "us-east-1"
 }
 
 resource "aws_instance" "first-aws-ec2" {
-  ami           = "ami-0b3c832b6b7289e44"
+  ami           = "ami-068c0051b15cdb816"
   instance_type = "t3.micro"
 
   tags = {
-    Name ="first-ec2-instance"
+    Name = "instance-1"
   }
 }
