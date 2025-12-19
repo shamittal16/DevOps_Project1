@@ -7,7 +7,7 @@ Terraform will perform the following actions:
 
   # aws_instance.first-aws-ec2 will be created
   + resource "aws_instance" "first-aws-ec2" {
-      + ami                                  = "ami-0b3c832b6b7289e44"
+      + ami                                  = "ami-068c0051b15cdb816"
       + arn                                  = (known after apply)
       + associate_public_ip_address          = (known after apply)
       + availability_zone                    = (known after apply)
@@ -39,17 +39,17 @@ Terraform will perform the following actions:
       + private_ip                           = (known after apply)
       + public_dns                           = (known after apply)
       + public_ip                            = (known after apply)
-      + region                               = "ap-southeast-2"
+      + region                               = "us-east-1"
       + secondary_private_ips                = (known after apply)
       + security_groups                      = (known after apply)
       + source_dest_check                    = true
       + spot_instance_request_id             = (known after apply)
       + subnet_id                            = (known after apply)
       + tags                                 = {
-          + "Name" = "first-ec2-instance"
+          + "Name" = "instance-1"
         }
       + tags_all                             = {
-          + "Name" = "first-ec2-instance"
+          + "Name" = "instance-1"
         }
       + tenancy                              = (known after apply)
       + user_data_base64                     = (known after apply)
