@@ -81,4 +81,25 @@ Terraform will perform the following actions:
       + root_block_device (known after apply)
     }
 
-Plan: 1 to add, 0 to change, 0 to destroy.
+  # aws_security_group.mysg will be created
+  + resource "aws_security_group" "mysg" {
+      + arn                    = (known after apply)
+      + description            = "Security group managed by tf"
+      + egress                 = (known after apply)
+      + id                     = (known after apply)
+      + ingress                = (known after apply)
+      + name                   = "terraform-sg"
+      + name_prefix            = (known after apply)
+      + owner_id               = (known after apply)
+      + region                 = "us-east-1"
+      + revoke_rules_on_delete = false
+      + tags                   = {
+          + "Name" = "terraform-sg"
+        }
+      + tags_all               = {
+          + "Name" = "terraform-sg"
+        }
+      + vpc_id                 = (known after apply)
+    }
+
+Plan: 2 to add, 0 to change, 0 to destroy.
