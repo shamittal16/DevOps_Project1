@@ -29,4 +29,13 @@ You can also have a workflow to destroy infrastructure when needed.
 ## Why This Is Useful
 
 - Automates Terraform workflows, reducing human errors.
-- Ensures code chang
+- Ensures code changes are reviewed before affecting real infrastructure.
+- Makes learning Terraform simple by practicing with real automation.
+
+## Quick Start
+
+1. Make sure you have Terraform installed locally.
+2. Clone this repo:
+   ```bash
+   git clone <repo-url>
+   cd <repo-name>
