@@ -1,6 +1,9 @@
-Terraform Plan Summary: Create=2, Update=0, Delete=0
+Terraform Plan Summary: Create=3, Update=0, Delete=1
 --------------------------------------------
 registry.terraform.io
 ├─ hashicorp
 │  └─ aws aws_instance
 │  └─ aws aws_security_group
+│  └─ aws aws_security_group
+│  └─ aws aws_vpc_security_group_egress_rule
+│  └─ aws aws_vpc_security_group_ingress_rule
