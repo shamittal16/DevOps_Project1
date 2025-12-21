@@ -10,3 +10,11 @@ resource "aws_instance" "first-aws-ec2" {
     Name = "instance-1"
   }
 }
+resource "aws_security_group" "mysg" {
+  name = "terraform-sg"
+  description = "Security group managed by tf"
+
+  tags = {
+    Name = "terraform-sg"
+  }
+}
