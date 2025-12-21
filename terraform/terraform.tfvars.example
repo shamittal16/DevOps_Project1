@@ -1,0 +1,42 @@
+# Example Terraform Variables Configuration
+# Copy this file to terraform.tfvars and update with your values
+
+# AWS Region
+# aws_region = "ap-southeast-2"
+
+# Domain Configuration
+# Leave empty to deploy without custom domain
+# domain_name = "example.com"
+
+# Set to true if you want Terraform to create a new Route53 hosted zone
+# Set to false if you already have a hosted zone for this domain
+# create_route53_zone = false
+
+# CloudFront Configuration
+# Set to false if you don't want CloudFront CDN
+# enable_cloudfront = true
+
+# Logging Configuration
+# Enable/disable access logging to S3
+# enable_alb_logging = true
+# enable_cloudfront_logging = true
+
+# Example configurations:
+
+# 1. Basic deployment without domain:
+# (No variables needed, use defaults)
+
+# 2. Deployment with existing domain:
+# domain_name = "myapp.example.com"
+# create_route53_zone = false
+# enable_cloudfront = true
+
+# 3. New domain with Route53 zone:
+# domain_name = "newapp.com"
+# create_route53_zone = true
+# enable_cloudfront = true
+
+# 4. ALB only (no CloudFront):
+# domain_name = "app.example.com"
+# create_route53_zone = false
+# enable_cloudfront = false

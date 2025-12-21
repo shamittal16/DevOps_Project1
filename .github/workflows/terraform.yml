@@ -12,6 +12,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   terraform:
@@ -26,9 +27,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: latest
+          terraform_wrapper: false
           
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -41,10 +43,84 @@ jobs:
         run: terraform -chdir=terraform init
 
       - name: Terraform Plan
+        id: plan
         run: |
-          terraform -chdir=terraform plan -input=false | tee plan.out
-          echo "----------------------------------------"
-          grep -E "Plan:" plan.out
+          cd terraform
+          
+          # Generate binary plan file
+          terraform plan -out=tfplan -input=false
+          
+          # Generate readable tfplan.txt
+          terraform show -no-color tfplan > tfplan.txt
+          
+          # Generate JSON for summary
+          terraform show -json tfplan > plan.json
+          
+          # Count actions
+          CREATE=$(jq '[.resource_changes[]? | select(.change.actions[] == "create")] | length' plan.json)
+          UPDATE=$(jq '[.resource_changes[]? | select(.change.actions[] == "update")] | length' plan.json)
+          DELETE=$(jq '[.resource_changes[]? | select(.change.actions[] == "delete")] | length' plan.json)
+          
+          # Write summary
+          echo "Terraform Plan Summary: Create=$CREATE, Update=$UPDATE, Delete=$DELETE" > tfplan_summary.txt
+          echo "--------------------------------------------" >> tfplan_summary.txt
+          
+          # Generate resource tree
+          jq -r '.resource_changes[]? | "\(.provider_name)/\(.type)/\(.name) (\(.change.actions | join(",")))"' plan.json \
+          | sort | awk '
+          BEGIN { FS="/"; OFS="/"; lastProv=""; lastType="" }
+          {
+            prov=$1; type=$2; name=$3; action=$4;
+            if(prov!=lastProv){ print prov; lastProv=prov; lastType=""; }
+            if(type!=lastType){ print "├─ " type; lastType=type; }
+            print "│  └─ " name " " action
+          }' >> tfplan_summary.txt
+          
+          # Clean up
+          rm -f plan.json
+          
+          # Set output for plan status
+          echo "create=$CREATE" >> $GITHUB_OUTPUT
+          echo "update=$UPDATE" >> $GITHUB_OUTPUT
+          echo "delete=$DELETE" >> $GITHUB_OUTPUT
+
+      - name: Comment PR with Plan
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const summary = fs.readFileSync('terraform/tfplan_summary.txt', 'utf8');
+            const plan = fs.readFileSync('terraform/tfplan.txt', 'utf8');
+            
+            // Truncate plan if too long (GitHub has comment size limits)
+            const maxPlanLength = 60000;
+            const planOutput = plan.length > maxPlanLength 
+              ? plan.substring(0, maxPlanLength) + '\n\n...(truncated)'
+              : plan;
+            
+            const output = `#### Terraform Plan Summary
+            \`\`\`
+            ${summary}
+            \`\`\`
+            
+            <details>
+            <summary>Show Full Plan</summary>
+            
+            \`\`\`terraform
+            ${planOutput}
+            \`\`\`
+            
+            </details>
+            
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Workflow: \`${{ github.workflow }}\`*`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            });
 
       - name: Terraform Apply
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
