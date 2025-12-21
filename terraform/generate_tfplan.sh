@@ -1,8 +1,8 @@
 #!/bin/bash
 
-PLAN_FILE="tfplan"
-SUMMARY_FILE="tfplan_summary.txt"
-TMP_JSON="plan.json"
+PLAN_FILE="plan/tfplan"
+SUMMARY_FILE="plan/tfplan_summary.txt"
+TMP_JSON="plan/plan.json"
 
 # Step 1: Initialize Terraform
 echo "Initializing Terraform..."
@@ -22,7 +22,7 @@ fi
 
 # Step 3: Generate readable tfplan.txt
 echo "Generating readable tfplan.txt..."
-terraform show -no-color $PLAN_FILE > tfplan.txt
+terraform show -no-color $PLAN_FILE > plan/tfplan.txt
 
 # Step 4: Generate summary using temporary JSON
 echo "Generating tfplan_summary.txt..."

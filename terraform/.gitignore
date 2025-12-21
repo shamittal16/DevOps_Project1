@@ -5,7 +5,7 @@ terraform/.terraform/
 crash.log
 # Terraform plan files
 *.tfplan
-
+plan/*
 # Secrets
 *.tfvars
 *.pem
