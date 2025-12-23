@@ -6,12 +6,24 @@ on:
       - main
     paths:
       - 'terraform/*.tf'
+
   pull_request:
     paths:
       - 'terraform/*.tf'
 
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "Terraform action to run"
+        required: true
+        default: "plan"
+        type: choice
+        options:
+          - plan
+
 permissions:
   contents: read
+  pull-requests: write   # needed to comment on PRs
 
 jobs:
   terraform:
@@ -29,7 +41,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: latest
-          
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -41,11 +53,32 @@ jobs:
         run: terraform -chdir=terraform init
 
       - name: Terraform Plan
+        id: plan
+        if: |
+          github.event_name == 'pull_request' ||
+          github.event_name == 'workflow_dispatch' && inputs.action == 'plan' ||
+          github.event_name == 'push'
         run: |
-          terraform -chdir=terraform plan -input=false | tee plan.out
-          echo "----------------------------------------"
-          grep -E "Plan:" plan.out
+          terraform -chdir=terraform plan -input=false -no-color | tee plan.out
+
+      # Comment plan on PR
+      - name: Comment Terraform Plan on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const plan = fs.readFileSync('plan.out', 'utf8').slice(0, 65000);
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `### Terraform Plan 📖\n\n\`\`\`\n${plan}\n\`\`\``
+            });
 
       - name: Terraform Apply
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: |
+          github.event_name == 'push' && github.ref == 'refs/heads/main' ||
+          github.event_name == 'workflow_dispatch' && inputs.action == 'apply'
         run: terraform -chdir=terraform apply -auto-approve -input=false
