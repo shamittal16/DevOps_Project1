@@ -7,7 +7,7 @@ resource "aws_instance" "first-aws-ec2" {
   instance_type = "t3.micro"
 
   tags = {
-    Name = "instance-1"
+    Name = "instance-01"
   }
 }
 
