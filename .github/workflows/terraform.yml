@@ -1,29 +1,19 @@
 name: Terraform CI/CD
 
 on:
+  pull_request:
+    paths:
+      - 'terraform/*.tf'
+
   push:
     branches:
       - main
     paths:
       - 'terraform/*.tf'
 
-  pull_request:
-    paths:
-      - 'terraform/*.tf'
-
-  workflow_dispatch:
-    inputs:
-      action:
-        description: "Terraform action to run"
-        required: true
-        default: "plan"
-        type: choice
-        options:
-          - plan
-
 permissions:
   contents: read
-  pull-requests: write   # needed to comment on PRs
+  pull-requests: write
 
 jobs:
   terraform:
@@ -52,17 +42,13 @@ jobs:
       - name: Terraform Init
         run: terraform -chdir=terraform init
 
+      # ---------- PLAN ----------
       - name: Terraform Plan
-        id: plan
-        if: |
-          github.event_name == 'pull_request' ||
-          github.event_name == 'workflow_dispatch' && inputs.action == 'plan' ||
-          github.event_name == 'push'
+        if: github.event_name == 'pull_request'
         run: |
           terraform -chdir=terraform plan -input=false -no-color | tee plan.out
 
-      # Comment plan on PR
-      - name: Comment Terraform Plan on PR
+      - name: Comment Plan on PR
         if: github.event_name == 'pull_request'
         uses: actions/github-script@v7
         with:
@@ -77,8 +63,7 @@ jobs:
               body: `### Terraform Plan 📖\n\n\`\`\`\n${plan}\n\`\`\``
             });
 
+      # ---------- APPLY ----------
       - name: Terraform Apply
-        if: |
-          github.event_name == 'push' && github.ref == 'refs/heads/main' ||
-          github.event_name == 'workflow_dispatch' && inputs.action == 'apply'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: terraform -chdir=terraform apply -auto-approve -input=false
